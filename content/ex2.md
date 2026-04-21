@@ -2,9 +2,13 @@
 title: "2. Estructuración del Proyecto Software"
 ---
 
-Es fundamental aprovechar las ventajas de un RTOS mediante la programación de tareas en ficheros fuente individuales.
+## Contexto y objetivo
 
-Asimismo, para organizar un proyecto complejo, es clave separar por niveles (carpetas y subcarpetas) los elementos de la capa de aplicación de aquellos más próximos al hardware o a los periféricos.
+A medida que un proyecto crece, concentrar todo el código en un único fichero se vuelve inmanejable. En sistemas embebidos es habitual separar el código en capas funcionales: una **capa de aplicación** con la lógica de las tareas y una **capa de soporte hardware** (*Base Software*) que encapsula el acceso directo a los periféricos.
+
+Esta separación tiene ventajas concretas: el driver de un periférico puede reutilizarse en otros proyectos sin modificaciones; la lógica de una tarea puede cambiarse sin tocar el hardware; y el proyecto resulta más fácil de depurar porque cada fichero tiene una responsabilidad única. En este ejercicio reorganizamos el proyecto en esa estructura, moviendo cada tarea a su propio par de ficheros `.c`/`.h`.
+
+Es fundamental aprovechar las ventajas de un RTOS mediante la programación de tareas en ficheros fuente individuales.
 
 ### Capa de aplicación
 
@@ -53,7 +57,7 @@ Incluya en `BaseSW/inc` el fichero `led.h` y en `BaseSW/src` el fichero `led.c` 
 
 <br>
 
-Observe el contenido de los ficheros .c y .h entregados.
+Observe el contenido de los ficheros `.c` y `.h` entregados.
 
 Edite el contenido del programa principal `pract1_rtos.c` para que no aparezcan los cuerpos de las tareas, sino que estos se localicen en ficheros independientes. Para ello deberá crear `task1.c` y `task1.h` y almacenarlos en las carpetas `AppSW/src` y `AppSW/inc`. Haga lo mismo con el resto de tareas.
 
@@ -93,12 +97,13 @@ Para poder crear las tareas desde el fichero principal, necesita incluir ahora l
 
 <br>
 
-Compile y verifique que el proyecto sigue funcionando, pero con una estructura mejor.
+Compile y verifique que el proyecto sigue funcionando correctamente, pero ahora con una estructura modular.
 
-- ¿Para qué es útil estructurar las carpetas?
-- ¿Qué ficheros de cabecera deben incluirse en el fichero fuente en C?
-- ¿Qué se programa en los ficheros de cabecera en C?
+### Cuestiones
 
+- ¿Para qué es útil estructurar las carpetas en capas?
+- ¿Qué ficheros de cabecera deben incluirse en el fichero fuente `.c` de cada tarea?
+- ¿Qué se declara en los ficheros de cabecera `.h` en C?
 
 [Ir Ejercicio 3](ex3.md)
 [Volver a Índice](index.md)

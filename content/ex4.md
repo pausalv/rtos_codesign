@@ -2,16 +2,22 @@
 title: "4. Uso de VGA y Funciones No Reentrantes"
 ---
 
-Ahora vamos a inicializar la pantalla VGA y enviar mensajes por ella. Para ello creamos una función `Init_App()` en un fichero fuente llamado `init.c` que crearemos en `AppSW/src`. Añadiremos su correspondiente `init.h` en `AppSW/inc`.
+## Contexto y objetivo
 
-Para ello use los ficheros `init.c` e `init.h` proporcionados en la práctica.
+Hasta ahora hemos enviado mensajes por UART mediante `printf`. En este ejercicio incorporamos la pantalla VGA como segundo canal de salida. Para ello crearemos una función de inicialización `Init_App()` que configure todos los periféricos antes de que arranque el scheduler.
+
+Sin embargo, este ejercicio tiene un segundo objetivo igual de importante: introducir el concepto de **función no reentrante** y reflexionar sobre los problemas que plantea en un RTOS. Una función es no reentrante cuando su ejecución simultánea desde varios contextos puede producir resultados incorrectos, normalmente porque manipula datos compartidos (variables globales, buffers estáticos). En un RTOS, cualquier tarea puede ser interrumpida en cualquier punto y reemplazada por otra de mayor prioridad, lo que hace que las funciones no reentrantes sean especialmente peligrosas.
+
+## Archivos de inicialización
+
+Añadiremos una función `Init_App()` en un fichero fuente `init.c`, ubicado en `AppSW/src`. Su correspondiente `init.h` irá en `AppSW/inc`.
 
 >[!note] *Archivos para descargar:*
 >
 > - [init.h](files_ucosii/init.h) - Archivo de cabecera con prototipos y variables globales
 > - [init.c](files_ucosii/init.c) - Archivo fuente con implementación de Init_App()
 
-El fichero de cabecera `init.h` hará públicas las variables globales definidas en `init.c` así como los prototipos de funciones cuyo cuerpo se encuentre en `init.c`.
+Estudie el contenido de ambos ficheros. El fichero `init.h` hace públicas las variables globales definidas en `init.c` así como los prototipos de sus funciones.
 
 <div align="center">
 	<img src="img/Imagen16.png" alt="Ejemplo de init.h" width="450"/>
@@ -21,37 +27,26 @@ El fichero de cabecera `init.h` hará públicas las variables globales definidas
 
 <br>
 
-Estudie el contenido de los ficheros `init.c` e `init.h`.
+Incluya la llamada a `Init_App()` en `main()` **antes** de la creación de las tareas. Compile y verifique que la VGA funciona.
 
-Incluya la llamada a la función `Init_App()` en `main` antes de la creación de las tareas.
+## Uso de Print_VGA() en las tareas
 
-Compile y verifique que la VGA funciona.
+La función `Print_VGA(char *msg, int *line)` escribe una cadena en la VGA y avanza el puntero de línea `line`. Modifique todas las tareas para que también envíen su mensaje por VGA, usando esta función.
 
-### Uso de Print_VGA() en las tareas
+Compile y verifique el funcionamiento.
 
-Introducimos el uso de `Print_VGA()` en las tasks de forma que envíen el mensaje por la VGA. Realice esto con todas las task y compruebe su funcionamiento.
+## Funciones no reentrantes
 
-<div align="center">
-	<img src="img/Imagen17.png" alt="Mensajes por VGA desde Tasks" width="450"/>
-	<br>
-	<em>Figura 17. Mensajes por VGA desde Tasks.</em>
-</div>
-
-<br>
-
-Compile y verifique el funcionamiento de los mensajes sobre VGA.
-
-### Funciones no reentrantes
-
-La función `Print_VGA()` nos permite escribir strings en la VGA desde una task. **Precaución** con esta función pues utiliza una variable global compartida entre tareas para poder saber la línea de escritura del mensaje.
+La función `Print_VGA()` utiliza la variable global `line` como puntero de escritura compartido entre todas las tareas. Si una tarea es expulsada por el scheduler justo mientras está actualizando `line`, y otra tarea empieza a llamar a `Print_VGA()`, el resultado puede ser incorrecto: mensajes solapados, líneas saltadas o escrituras fuera de los límites de la pantalla.
 
 **Preguntas de reflexión:**
+
 - ¿Por qué se considera `Print_VGA()` una función no reentrante?
-- ¿Qué solución se debe adoptar cuando en RTOS trabajamos con funciones no reentrantes?
+- ¿Qué solución se debe adoptar cuando en un RTOS trabajamos con funciones no reentrantes?
 
-### Inclusión de número de línea
+## Inclusión del número de línea
 
-Vamos a incluir el número de línea para que se visualice en la VGA. Para ello modifique las tasks de forma que puedan verse los números de línea como se muestra en el siguiente código ejemplo. De nuevo compile y ejecute sobre NIOSII.
+Modifique las tareas para que el número de línea sea visible en cada mensaje de VGA. Para ello construya una cadena de texto con `snprintf` que incluya el valor de `line` antes del mensaje, y pásela a `Print_VGA()`. Consulte la Figura 18 como referencia.
 
 <div align="center">
 	<img src="img/Imagen18.png" alt="Inclusión de número de línea en código de task" width="600"/>
@@ -61,7 +56,7 @@ Vamos a incluir el número de línea para que se visualice en la VGA. Para ello 
 
 <br>
 
-**Importante:** Recuerde archivar su proyecto en Zip para no perder la versión actualizada de su trabajo hasta el momento (al menos como alternativa al uso de Git o sistemas de mantenimiento de versiones).
+**Importante:** Archive su proyecto en ZIP para no perder el trabajo hasta este punto.
 
 [Ir Ejercicio 5](ex5.md)
 [Volver a Indice](index.md)
