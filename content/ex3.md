@@ -31,28 +31,17 @@ volatile char *character_buffer = (char *) VIDEO_CHARACTER_BUFFER_WITH_DMA_AVALO
 volatile int *keyboard_ptr = (int *) PS2_KEY_BASE;
 ```
 
-<div align="center">
-	<img src="img/Imagen12.png" alt="Fichero pract1_rtos.c con definicion de punteros de perifericos" width="600"/>
-	<br>
-	<em>Figura 12. Fichero pract1_rtos.c, definicion de punteros de perifericos.</em>
-</div>
+Para que las tareas en otros ficheros puedan usar estos punteros, deben declararse como `extern` en el fichero de cabecera principal `pract1_rtos.h`. También podemos mover la declaración de las prioridades de las tareas a ese fichero. Así, cualquier tarea que incluya dicha cabecera tiene acceso a todos los periféricos y prioridades.
 
-<br>
-
-Para que las tareas en otros ficheros puedan usar estos punteros, deben declararse como `extern` en el fichero de cabecera principal `pract1_rtos.h`. Así, cualquier tarea que incluya dicha cabecera tiene acceso a todos los periféricos.
-
-<div align="center">
+<!-- <div align="center">
 	<img src="img/Imagen13.png" alt="Fichero de cabecera pract1_rtos.h" width="300"/>
 	<br>
 	<em>Figura 13. Fichero de cabecera pract1_rtos.h.</em>
 </div>
+-->
 
-<br>
 
 ```c
-#ifndef PRACT1_RTOS_H__ 
-#define PRACT1_RTOS_H__
-
 /* Definition of Task Priorities */
 #define TASK1_PRIORITY      1
 #define TASK2_PRIORITY      2
@@ -69,47 +58,32 @@ extern volatile short  * pixel_buffer;
 extern volatile char   * character_buffer;
 extern volatile int    * keyboard_ptr;
 
-/* include ucos basic libraries */
-#include <stdio.h>
-#include <stdlib.h>
-#include "includes.h"
 
-extern INT8U error;
 
-/* include header files for the tasks */
-#include "App_SW/inc/task1.h"
-#include "App_SW/inc/task2.h"
-#include "App_SW/inc/task3.h"
-#include "App_SW/inc/task4.h"
-
-/* include header files from peripherals */
-#include "Base_SW/inc/led.h"
-#include "Base_SW/inc/vga.h"
-
-#endif // PRACT1_RTOS_H__
 ```
 
 Se deben incluir todas las librerías en `pract1_rtos.h` y que este sea el único fichero a incluir en cada `.h` de las tareas.
+El fichero `task1.h` simplemente declara el prototipo e incluye la cabecera principal del proyecto:
 
-<div align="center">
+<!-- <div align="center">
 	<img src="img/Imagen14.png" alt="Ejemplo de fichero de cabecera de task1.h" width="300"/>
 	<br>
 	<em>Figura 14. Ejemplo de fichero de cabecera de la task1 (task1.h).</em>
 </div>
+-->
 
-<br>
-
-El fichero `task1.h` simplemente declara el prototipo e incluye la cabecera principal del proyecto:
 
 ```c
-#ifndef TASK1_H__
-#define TASK1_H__
+#ifndef TASK1_H
+#define TASK1_H
 
-#include "..\..\pract1_rtos.h"
+/* include main project library */
+#include "../../pract1_rtos.h"
 
-void task1(void* pdata);
+/* declare functions from task1.c */
+void task1(void *pdata);
 
-#endif // TASK1_H__
+#endif /* TASK1_H */
 ```
 
 Compile para verificar que las inclusiones no dan problemas.
@@ -123,6 +97,8 @@ Estudie los ficheros `led.c` y `led.h` para conocer las funciones disponibles. C
 - `task3` (periodo 1 s): enciende varios LEDs al ejecutarse con `Led_ON_Some(LED_ptr, 8, 2)`.
 - `task4` (periodo 5 s): apaga los LEDs que enciende task3 con `Led_OFF_Some(LED_ptr, 8, 2)`.
 
+Para que el resultado sea determinista, vamos a inicializar el estado de los LEDs 0 y 1 en las tareas 1 y 2 respectivamente, de forma que siempre empiecen apagados. Para ello, añada `Led_OFF_Some(LED_ptr, 1, 0)` al inicio de `task1` y `Led_OFF_Some(LED_ptr, 1, 1)` al inicio de `task2`.
+
 A modo de referencia, el cuerpo de `task2.c` quedaría así:
 
 ```c
@@ -130,6 +106,7 @@ A modo de referencia, el cuerpo de `task2.c` quedaría así:
 
 void task2(void* pdata)
 {
+  Led_OFF_Some(LED_ptr, 1, 1); /* inicializa el LED 1 apagado */
   while (1)
   { 
     Toggle_Led(LED_ptr, 1);

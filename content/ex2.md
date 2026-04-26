@@ -67,35 +67,79 @@ Edite el contenido del programa principal `pract1_rtos.c` para que no aparezcan 
 	<em>Figura 8. Carpeta AppSW/inc con sus ficheros de cabecera.</em>
 </div>
 
-<br>
+Un ejemplo de `task1.c` en su directorio correspondiente es:
 
-Un ejemplo de `task1.c` en sus respectivos directorios es:
-
-<div align="center">
+<!-- <div align="center">
 	<img src="img/Imagen9.png" alt="Fichero task1.c con la inclusión de cabecera" width="600"/>
 	<br>
 	<em>Figura 9. Fichero task1.c con la inclusión de cabecera.</em>
-</div>
+</div> -->
 
-<br>
+``` c
+#include "../inc/task1.h"
 
+/* Prints "Hello World!" and sleeps for three seconds */
+void task1(void *pdata) {
+    while (1) {
+        printf("Hello World!\n");
+        OSTimeDlyHMSM(0, 0, 3, 0);
+    }
+}
+```
+
+Un ejemplo de `task1.h` es:
+<!-- 
 <div align="center">
 	<img src="img/Imagen10.png" alt="Fichero task.h con la inclusión de librería principal pract1_rtos.h" width="450"/>
 	<br>
 	<em>Figura 10. Fichero task.h con la inclusión de librería principal pract1_rtos.h.</em>
-</div>
+</div> -->
 
-<br>
+``` c
+#ifndef TASK1_H
+#define TASK1_H
 
-Para poder crear las tareas desde el fichero principal, necesita incluir ahora los ficheros de cabecera de las tareas; de lo contrario no localizará el cuerpo de las tareas al utilizar el servicio `OSTaskCreateExt()`. Una forma elegante es incluir solo el fichero `pract1_rtos.h` en `pract1_rtos.c` y, en ese fichero de cabecera, incluir los elementos indicados en la Figura 11.
+/* include main project library */
+#include "../../pract1_rtos.h"
 
-<div align="center">
+/* declare functions from task1.c */
+void task1(void *pdata);
+
+#endif /* TASK1_H */
+```
+
+Para poder crear las tareas desde el fichero principal, necesita incluir ahora los ficheros de cabecera de las tareas; de lo contrario no localizará el cuerpo de las tareas al utilizar el servicio `OSTaskCreateExt()`. Una forma elegante es incluir solo el fichero `pract1_rtos.h` en `pract1_rtos.c` y, en ese fichero de cabecera, incluir los elementos del proyecto (incluyendo las tareas y los periféros). De esta forma, cada tarea solo necesita incluir `pract1_rtos.h` para tener acceso a todo el proyecto.
+
+``` c
+#ifndef PRACT1_RTOS_H
+#define PRACT1_RTOS_H
+
+/* include standard libraries */
+#include <stdio.h>
+#include <stdlib.h>
+
+/* include uC/OS-II services */
+#include "includes.h"
+
+/* include task headers */
+#include "AppSW/inc/task1.h"
+#include "AppSW/inc/task2.h"
+#include "AppSW/inc/task3.h"
+#include "AppSW/inc/task4.h"
+
+/* include header files from peripherals */
+#include "Base_SW/inc/led.h"
+#include "Base_SW/inc/vga.h"
+
+#endif /* PRACT1_RTOS_H */
+```
+
+<!-- <div align="center">
 	<img src="img/Imagen11.png" alt="Inclusión de ficheros de cabecera en pract1_rtos.h" width="380"/>
 	<br>
 	<em>Figura 11. Inclusión de ficheros de cabecera en fichero pract1_rtos.h.</em>
-</div>
+</div> -->
 
-<br>
 
 Compile y verifique que el proyecto sigue funcionando correctamente, pero ahora con una estructura modular.
 
