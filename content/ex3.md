@@ -19,10 +19,10 @@ INT8U  error;
 
 /* definition of peripheral addresses */
 volatile int *LED_ptr = (int *) LEDS_BASE; // LED address
-volatile int *SW_swith_ptr  = (int *) SWITCHES_BASE; // SW address
+volatile int *SW_switch_ptr = (int *) SWITCHES_BASE; // SW address
 volatile int *KEY_ptr = (int *) PUSHBUTTONS_BASE; // KEY address
-volatile int *HEX2_HEX0_ptr = (int *) HEX2_HEX0_BASE; // HEX3_HEX0 address
-volatile int *HEX5_HEX3_ptr = (int *) HEX5_HEX3_BASE; // HEX5_HEX4 address
+volatile int *HEX2_HEX0_ptr = (int *) HEX2_HEX0_BASE; // HEX2_HEX0 address
+volatile int *HEX5_HEX3_ptr = (int *) HEX5_HEX3_BASE; // HEX5_HEX3 address
 
 
 /* definition of VGA pixel buffer */
@@ -81,14 +81,14 @@ extern volatile int	    * keyboard_ptr;
 extern INT8U error;
 
 /* include header files for the tasks */
-#include "App_SW/inc/task1.h"
-#include "App_SW/inc/task2.h"
-#include "App_SW/inc/task3.h"
-#include "App_SW/inc/task4.h"
+#include "AppSW/inc/task1.h"
+#include "AppSW/inc/task2.h"
+#include "AppSW/inc/task3.h"
+#include "AppSW/inc/task4.h"
 
 /*include header files from peripherals */
-#include "Base_SW/inc/led.h"
-#include "Base_SW/inc/vga.h"
+#include "BaseSW/inc/led.h"
+#include "BaseSW/inc/vga.h"
 
 #endif // PRACT1_RTOS_H__
 
