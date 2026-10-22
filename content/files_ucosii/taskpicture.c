@@ -20,6 +20,7 @@ void TaskPicture(void* pdata)
 {
 
 	INT8U err;
+	void *pBlock; // memory block returned by OSMemGet
 
 	while(1){
 
@@ -42,7 +43,7 @@ void TaskPicture(void* pdata)
 			int value = OSSemAccept(SemaphoreMemory);
 			if(value > 0){
 
-				PixelMem[filezip_number-1][0]=OSMemGet(ImageMemory, &err);
+				pBlock=OSMemGet(ImageMemory, &err);
 
 				alt_ucosii_check_return_code(err);
 
@@ -50,9 +51,9 @@ void TaskPicture(void* pdata)
 				OSMemQuery(ImageMemory, &mem_data);
 				printf("Number of memory blocks = %ld, Free = %ld, Used = %ld \n",mem_data.OSNBlks,mem_data.OSNFree,mem_data.OSNUsed);
 				printf("Size (in bytes) of each memory block = %lu,\n",mem_data.OSBlkSize);
-				printf("Pointer to the beginning address of the memory partition = %lu,\n",mem_data.OSAddr);
-				printf("Pointer to the reserved memory block = %lu,\n",&PixelMem[filezip_number-1][0]);
-				printf("Pointer to the beginning of the free list of memory blocks = %lu,\n",mem_data.OSFreeList);
+				printf("Pointer to the beginning address of the memory partition = %p,\n",mem_data.OSAddr);
+				printf("Pointer to the reserved memory block = %p,\n",pBlock);
+				printf("Pointer to the beginning of the free list of memory blocks = %p,\n",mem_data.OSFreeList);
 
 
 

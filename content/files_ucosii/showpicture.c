@@ -7,11 +7,13 @@
 
 
 
+#include <string.h>
 #include "..\inc\showpicture.h"
 
 void ShowPicture(void* pdata)
 {
 static INT8U i=0;
+INT8U err;
 	while(1){
 
 
