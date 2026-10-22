@@ -93,11 +93,14 @@ void task1(void* pdata)
     
     /* critical section */
     OSSemPend(Semaphore, 0, &err);
-
-    printf("Hello from task1\n");
-    snprintf(vga_msg, sizeof(vga_msg), "%02d   Hello from task1", line);
-    Print_VGA(vga_msg, &line);
-    
+    if (err == OS_ERR_NONE) {
+      printf("Hello from task1\n");
+      snprintf(vga_msg, sizeof(vga_msg), "%02d   Hello from task1", line);
+      Print_VGA(vga_msg, &line);
+    } else {
+      printf("Error acquiring semaphore in task1: %d\n", err);
+      break;
+    }
     OSSemPost(Semaphore);
     /* end of critical section */
 
