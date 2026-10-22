@@ -19,7 +19,7 @@ void TaskHomer(void* pdata)
 	{					            "Why you, little bastard!",
                         "        ___             ",
                         "       //_\\\\_           ",
-                        "     ."      ".         ",
+                        "     .\"      \".         ",
                         "    /          \\        ",
                         "    |           \\_      ",
                         "    |       ,--.-.)     ",

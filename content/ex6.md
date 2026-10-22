@@ -68,7 +68,7 @@ Construya la tarea `TaskHomer` y compruebe su visualización y sincronización t
 > - [taskhomer.h](files_ucosii/taskhomer.h) - Archivo de cabecera para la tarea Homer
 > - [taskhomer.c](files_ucosii/taskhomer.c) - Archivo fuente de la tarea Homer
 
-Puede usar las funciones de chequeo de errores alt_ucos_error_code.c y su fichero de cabecera alt_ucos_error_code.h tras los códigos de uso de servicios de UCOS que proporcionen variables de error como retorno de llamadas al servicio.
+Puede usar las funciones de chequeo de errores `alt_ucosii_simple_error_check.c` y su fichero de cabecera `alt_ucosii_simple_error_check.h` tras los códigos de uso de servicios de UCOS que proporcionen variables de error como retorno de llamadas al servicio.
 
 
 >[!note] *Archivos de control de errores:*
@@ -76,7 +76,7 @@ Puede usar las funciones de chequeo de errores alt_ucos_error_code.c y su ficher
 > - [alt_ucosii_simple_error_check.h](files_ucosii/alt_ucosii_simple_error_check.h) - Archivo de cabecera para control de errores UCOS
 > - [alt_ucosii_simple_error_check.c](files_ucosii/alt_ucosii_simple_error_check.c) - Archivo fuente para control de errores UCOS
 
-Incluya la librería stdlib.h en pract1_rtos.h, necesaria para el correcto funcionamiento de alt_ucos_error_code.c
+Incluya la librería stdlib.h en pract1_rtos.h, necesaria para el correcto funcionamiento de `alt_ucosii_simple_error_check.c`
 •	¿Qué periodo tienen las tareas Bart y Homer? ¿Se ven durante todo el periodo?
 •	¿Qué hacen las funciones de chequeo de errores? ¿dónde las utilizaría?
 
