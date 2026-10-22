@@ -12,35 +12,69 @@ Para ello creamos un semáforo:
 1. En `init.c` declaramos el puntero `OS_EVENT *Semaphore;` (descomente las líneas de declaración de semáforo) y creamos una función para creación de elementos de comunicación de tareas en UCOS (elimine comentarios para que se ejecute el servicio de creación de semáforos).
 2. En `init.h` elimine el comentario para que se publique el semáforo creado.
 
-<div align="center">
-	<img src="img/Imagen19.png" alt="Creación de función Init_UCOS_Utilities()" width="500"/>
-	<br>
-	<em>Figura 19. Creación de función Init_UCOS_Utilities().</em>
-</div>
+En `init.c`:
+
+```c
+// declaration of UCOS utilities
+OS_EVENT * Semaphore;
+
+...
+
+/* UCOS Utilities */
+void Init_UCOS_Utilities(void)
+{
+  Semaphore = OSSemCreate(1);
+}
+```
+
+En `init.h`:
+
+```c
+/* extern UCOS Utilities */
+extern OS_EVENT* Semaphore;
+```
 
 <br>
 
-`Init_UCOS_Utilities()` forma parte de la inicialización del sistema y se ejecuta antes de crear las tasks al ser llamada en `Init_App()`.
+`Init_UCOS_Utilities()` forma parte de la inicialización del sistema y se ejecuta antes de crear las tasks al ser llamada en `Init_App()`:
 
-<div align="center">
-	<img src="img/Imagen20.png" alt="Inclusión de funciones de inicio en main()" width="500"/>
-	<br>
-	<em>Figura 20. Inclusión de funciones de inicio en main().</em>
-</div>
+```c
+void Init_App()
+{
+    VGA_Clean_Full_Lines(1,60,character_buffer);
+
+//Text on first line
+    VGA_text (2, 0, texto_up,character_buffer);		// first line
+    VGA_text (2, 1, texto_down, character_buffer);  // second line
+
+//Boxes on VGA
+    VGA_box (0, 0, 80*4-1, 60*4-1, 0x1111,pixel_buffer);	 	//Big blue box on VGA
+    VGA_box (0, 0, 320-1, 8, 0x01100,pixel_buffer);  		//Black box on top area of VGA
+    /* pink box on right area */
+    VGA_box (155, 10, 315, 235, 0xF81F,pixel_buffer);	//Pink box on right area
+// VGA_box (155, 10, 315, 235, 0x0100,pixel_buffer);	//Black box on right area
+
+
+// OFF all leds on board
+    Led_OFF_All(LED_ptr);
+
+// Enable interrupts from pushbuttons
+//*(KEY_ptr + 2)=0xF; // Enable interrupts for all 4 pushbuttons
+//alt_irq_register(PUSHBUTTONS_IRQ, NULL, (alt_isr_func) pushbutton_isr);
+
+
+/* Initialization of UCOS utilities */
+    Init_UCOS_Utilities();
+
+}
+```
 
 <br>
 
 Así podemos usar el semáforo en todas las tareas que compartan la variable global "`line`".
 
-<div align="center">
-	<img src="img/Imagen21.png" alt="Uso de semáforo binario en una task" width="500"/>
-	<br>
-	<em>Figura 21. Uso de semáforo binario en una task.</em>
-</div>
-
-<br>
-
 ### Task1 con uso de semáforos para el uso de UART JTAG y VGA
+
 ```c
 /* include necessary headers */
 
