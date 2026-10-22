@@ -36,8 +36,7 @@ void TaskHomer(void* pdata)
 	int homer_pos=10; //start VGA line to draw
 
   /*
-    int *pMailBox_homer = NULL;
-    *pMailBox_homer = homer_pos;
+    int *pMailBox_homer = &homer_pos;
   */
 
   while (1)
@@ -52,8 +51,8 @@ void TaskHomer(void* pdata)
       OSSemPend(Semaphore,0,&err);
       alt_ucosii_check_return_code(err);
       printf("Mail is %d: new start position is %d\n",*pMailBox_homer,homer_pos);
-      OSSemPost(Semaphore);
-      alt_ucosii_check_return_code(err);    
+      err = OSSemPost(Semaphore);
+      alt_ucosii_check_return_code(err);
     }
 */
 

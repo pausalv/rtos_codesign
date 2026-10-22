@@ -53,7 +53,7 @@ OSIntEnter(); /* Inform the OS that we are starting an ISR */
   /* clear the interrupt */
   *(KEY_ptr + 3) = key_pressed;    
 
-  /* post the semaphore for the corresponding task */
+  /* check which KEY was pressed */
   if (key_pressed & 0x1)   // KEY0 pressed
   {
     snprintf(vga_msg, sizeof(vga_msg), "%02d   KEY0 Interruption", line);
@@ -63,8 +63,6 @@ OSIntEnter(); /* Inform the OS that we are starting an ISR */
   {
     snprintf(vga_msg, sizeof(vga_msg), "%02d   KEY1 Interruption", line);
     Print_VGA(vga_msg, &line);
-    OSFlagPost(EventFlag,0x01,OS_FLAG_SET, &error);
-    alt_ucosii_check_return_code(error);
   }
   if (key_pressed & 0x4)   // KEY2 pressed
   {
@@ -100,8 +98,7 @@ Antes del bucle de la task declaramos un puntero para almacenar los mensajes rec
 ```c
 /* local pointer declaration*/
 
-  int *pMailBox_homer = NULL;
-    *pMailBox_homer = homer_pos;
+  int *pMailBox_homer = &homer_pos;
 ```
 
 Dentro del bucle recibimos en la dirección `pMailBox_homer` el mensaje desde el mailbox `SharedMail`.
@@ -118,7 +115,7 @@ Dentro del bucle recibimos en la dirección `pMailBox_homer` el mensaje desde el
       OSSemPend(Semaphore,0,&err);
       alt_ucosii_check_return_code(err);
       printf("Mail is %d: new start position is %d\n",*pMailBox_homer,homer_pos);
-      OSSemPost(Semaphore);
+      err = OSSemPost(Semaphore);
       alt_ucosii_check_return_code(err);
     }
 ```
