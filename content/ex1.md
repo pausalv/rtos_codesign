@@ -37,23 +37,23 @@ void task2(void* pdata);
 /* TODO 5: prototipo de la tarea 3 */
 /* TODO 6: prototipo de la tarea 4 */
 
-/* Tarea 1: periodo ~500 ms */
+/* Tarea 1: periodo ~3 seg */
 void task1(void* pdata)
 {
 	while (1)
 	{
 		printf("Hello from task1\n");
-		OSTimeDlyHMSM(0, 0, 0, 500);
+		OSTimeDlyHMSM(0, 0, 3, 0);
 	}
 }
 
-/* Tarea 2: periodo ~500 ms */
+/* Tarea 2: periodo ~3 seg */
 void task2(void* pdata)
 {
 	while (1)
 	{
 		printf("Hello from task2\n");
-		OSTimeDlyHMSM(0, 0, 0, 500);
+		OSTimeDlyHMSM(0, 0, 3, 0);
 	}
 }
 
