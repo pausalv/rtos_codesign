@@ -68,7 +68,8 @@ typedef struct msg_data{
 Se debe activar la interrupción de PS2 en la función `Init_App()`:
 
 ```c
-alt_irq_register(PS2_KEY_IRQ, NULL, (alt_isr_func) isr_ps2_keyboard);
+*(keyboard_ptr + 1) = 0x1; // enable read interrupts on the PS2 controller (RE bit)
+alt_irq_register(PS2_KEY_IRQ, NULL, (alt_isr_func) keyboard_isr);
 ```
 
 #### Productor de elementos de cola (ISR)
@@ -96,6 +97,7 @@ En la ISR:
   INT8U Keycode;
   INT8U Rvalid;
   INT8U err;
+  INT32U ps2_data;
   static	INT8U Release=0;
 
   static INT8U i=0;
@@ -112,9 +114,10 @@ En la ISR:
 // and is readily available when the ISR is invoked.
   
 	alt_irq_disable(PS2_KEY_IRQ);
-	Rvalid=((*keyboard_ptr)>>12)&0x08; //check if data is valid
+	ps2_data=*keyboard_ptr; //read DATA register only once: each read pops a byte from the FIFO
+	Rvalid=(ps2_data>>15)&0x01; //check if data is valid (RVALID)
 	if (Rvalid){
-		Keycode=(*keyboard_ptr)&0xFF; //read the value
+		Keycode=ps2_data&0xFF; //read the value
 
 		switch (Keycode) {
 			case 0xAA: //code received from keyboard when is connected (5V)
@@ -162,8 +165,8 @@ Se actualizarán los valores recibidos y se postean en la cola:
 msg_isr[i].time = OSTimeGet();
 msg_isr[i].key_pressed = Keycode;
 msg_isr[i].count_key = i;
-printf("Value on keyboard is %x\\n",(INT8U)msg_isr[i].key_pressed);
-error = OSQPost(MessageQueue,(void *)&msg_isr[i]);
+printf("Value on keyboard is %x\n",(INT8U)msg_isr[i].key_pressed);
+err = OSQPost(MessageQueue,(void *)&msg_isr[i]);
 ```
 
 Se reactiva la interrupción PS2:
@@ -187,7 +190,7 @@ alt_irq_enable(PS2_KEY_IRQ);
 #include "..\inc\taskcode.h"
 #define PRINT_DEBUG
 
-void TaskCode()
+void TaskCode(void* pdata)
 {
 
   MSG_DATA_PS2* msg_rx; //pointer to message received from queue
@@ -241,8 +244,9 @@ void TaskCode()
       CodeReceived=0;
       Count_keys_received=0;
 
-      OSFlagPost(EventFlag,0x02,OS_FLAG_SET, &error);
-      alt_ucosii_check_return_code(error);
+      // uncomment in exercise 10 (EventFlag)
+      // OSFlagPost(EventFlag,0x02,OS_FLAG_SET, &error);
+      // alt_ucosii_check_return_code(error);
 
     }
     else
@@ -262,8 +266,9 @@ void TaskCode()
         VGA_text(10+15,20,"   SORRY BABY   ",character_buffer);
         VGA_text(10+15,22,"   WRONG  CODE  ",character_buffer);
 
-        OSFlagPost(EventFlag,0x02,OS_FLAG_CLR, &error);
-        alt_ucosii_check_return_code(error);
+        // uncomment in exercise 10 (EventFlag)
+        // OSFlagPost(EventFlag,0x02,OS_FLAG_CLR, &error);
+        // alt_ucosii_check_return_code(error);
 
       }
     }
@@ -276,20 +281,21 @@ En la Task que revisa contenidos de cola (la llamamos `TaskCode`):
 1. Se está pendiente de la cola:
 
 ```c
-pKeyboard_msg = (KEY_MSG *)OSQPend(MessageQueue, 1000, &error);
+msg_rx = (MSG_DATA_PS2*)OSQPend(MessageQueue, 0, &error);
 ```
 
 2. Se añade el byte del código recibido a las teclas previas recibidas:
 
 ```c
-Code_saved[i] = pKeyboard_msg->key_pressed;
+CodeReceived = CodeReceived<<8 | msg_rx->key_pressed;
 ```
 
 3. Si se ha pulsado INTRO se vacía la cola:
 
 ```c
-if (pKeyboard_msg->key_pressed == 0x5A) { // ENTER key
-    // Process and clear queue
+if (msg_rx->key_pressed == 0x5A) { // ENTER key
+    OSQFlush(MessageQueue);
+    Count_keys_received = 0;
 }
 ```
 
