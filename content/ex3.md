@@ -2,19 +2,11 @@
 title: "3. Definición de Periféricos y LEDs"
 ---
 
-Vamos a iniciar el uso de los perifericos en las tareas que tenemos programadas. Para ello hay que incluir todas las funciones que se van a usar, incorporando las librerias en el fichero de cabecera principal. En el fichero principal se definen los punteros a posiciones de memoria de los perifericos.
-
-<div align="center">
-	<img src="img/Imagen12.png" alt="Fichero pract1_rtos.c con definicion de punteros de perifericos" width="600"/>
-	<br>
-	<em>Figura 12. Fichero pract1_rtos.c, definicion de punteros de perifericos.</em>
-</div>
-
-<br>
-
-### Ejemplo de codigo de ayuda (Figura 12)
+Vamos a iniciar el uso de los perifericos en las tareas que tenemos programadas. Para ello hay que incluir todas las funciones que se van a usar, incorporando las librerias en el fichero de cabecera principal. En el fichero principal `pract1_rtos.c` se definen los punteros a posiciones de memoria de los perifericos:
 
 ```c
+#include "pract1_rtos.h"
+
 INT8U  error;
 
 /* definition of peripheral addresses */
@@ -37,17 +29,7 @@ volatile int *keyboard_ptr = (int *) PS2_KEY_BASE; // keyboard address
 
 <br>
 
-Y se deben hacer publicos en su fichero de cabecera, como se observa en la Figura 13.
-
-<div align="center">
-	<img src="img/Imagen13.png" alt="Fichero de cabecera pract1_rtos.h" width="300"/>
-	<br>
-	<em>Figura 13. Fichero de cabecera pract1_rtos.h.</em>
-</div>
-
-<br>
-
-### Ejemplo de codigo de ayuda (Figura 13)
+Y se deben hacer publicos en su fichero de cabecera `pract1_rtos.h`:
 
 ```c
 #ifndef PRACT1_RTOS_H__ 
@@ -96,17 +78,7 @@ extern INT8U error;
 
 <br>
 
-Se deben incluir todas las librerias en `pract1_rtos.h` y que este sea el unico fichero a incluir en cada `.h` de las tareas.
-
-<div align="center">
-	<img src="img/Imagen14.png" alt="Ejemplo de fichero de cabecera de task1.h" width="300"/>
-	<br>
-	<em>Figura 14. Ejemplo de fichero de cabecera de la task1 (task1.h).</em>
-</div>
-
-<br>
-
-### Ejemplo de codigo de ayuda (Figura 14)
+Se deben incluir todas las librerias en `pract1_rtos.h` y que este sea el unico fichero a incluir en cada `.h` de las tareas. Por ejemplo, `task1.h`:
 
 ```c
 #ifndef TASK1_H__
@@ -131,15 +103,7 @@ Use los ficheros proporcionados en la practica de LEDs (`led.c` y `led.h`) para 
 - La `task3`, que se ejecuta cada segundo, enciende todos los LEDs restantes al ejecutarse mediante `Led_ON_Some(LED_ptr,8,2);`.
 - La `task4`, que se ejecuta cada 5 segundos, apaga los LEDs que enciende la `task3` mediante `Led_OFF_Some(LED_ptr,8,2);`.
 
-<div align="center">
-	<img src="img/Imagen15.png" alt="Ejemplo de task2.c" width="450"/>
-	<br>
-	<em>Figura 15. Ejemplo de task2.c.</em>
-</div>
-
-<br>
-
-### Ejemplo de codigo de ayuda (Figura 15)
+Un ejemplo de `task2.c` es:
 
 ```c
 /* include necessary headers */
