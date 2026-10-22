@@ -47,7 +47,7 @@ OS_EVENT *MessageQueue;
 void *MessageQueueTbl[4];
 ```
 
-Y su creación en `UCOS_Utilities()`:
+Y su creación en `Init_UCOS_Utilities()`:
 
 ```c
 MessageQueue = OSQCreate(MessageQueueTbl, 4);

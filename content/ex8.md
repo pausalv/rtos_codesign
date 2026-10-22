@@ -16,7 +16,7 @@ Para conocer la nueva posición donde se pintará el dibujo se debe comunicar me
 
 1. Cree el puntero para el mailbox `OS_EVENT *SharedMail;` en el fichero `init.c` y publíquelo en `init.h`
 
-2. Cree el mailbox dentro de la función `UCOS_Utilities()`:
+2. Cree el mailbox dentro de la función `Init_UCOS_Utilities()`:
    ```c
    SharedMail = OSMboxCreate(NULL);
    ```

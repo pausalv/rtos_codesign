@@ -16,7 +16,7 @@ OSIntEnter(); /* Inform the OS that we are starting an ISR */
   /* clear the interrupt */
   *(KEY_ptr + 3) = key_pressed;    
 
-  /* post the semaphore for the corresponding task */
+  /* check which KEY was pressed */
   if (key_pressed & 0x1)   // KEY0 pressed
   {
     snprintf(vga_msg, sizeof(vga_msg), "%02d   KEY0 Interruption", line);

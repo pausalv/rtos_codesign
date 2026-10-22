@@ -37,7 +37,7 @@ void Init_App()
 
 // Enable interrupts from pushbuttons
 //*(KEY_ptr + 2)=0xF; // Enable interrupts for all 4 pushbuttons
-//alt_irq_register(PUSHBUTTONS_IRQ, NULL, pushbutton_isr);
+//alt_irq_register(PUSHBUTTONS_IRQ, NULL, (alt_isr_func) pushbutton_isr);
 
     
 /* Initialization of UCOS utilities */

@@ -13,14 +13,14 @@ Para ello creamos un semáforo:
 2. En `init.h` elimine el comentario para que se publique el semáforo creado.
 
 <div align="center">
-	<img src="img/Imagen19.png" alt="Creación de función UCOS_Utilities()" width="500"/>
+	<img src="img/Imagen19.png" alt="Creación de función Init_UCOS_Utilities()" width="500"/>
 	<br>
-	<em>Figura 19. Creación de función UCOS_Utilities().</em>
+	<em>Figura 19. Creación de función Init_UCOS_Utilities().</em>
 </div>
 
 <br>
 
-`UCOS_Utilities()` forma parte de la inicialización del sistema y se ejecuta antes de crear las tasks al ser llamada en `Init_App()`.
+`Init_UCOS_Utilities()` forma parte de la inicialización del sistema y se ejecuta antes de crear las tasks al ser llamada en `Init_App()`.
 
 <div align="center">
 	<img src="img/Imagen20.png" alt="Inclusión de funciones de inicio en main()" width="500"/>
@@ -51,13 +51,14 @@ Así podemos usar el semáforo en todas las tareas que compartan la variable glo
 void task1(void* pdata)
 {
 
+  INT8U err;
   char vga_msg[60];
   while (1)
   { 
     Toggle_Led(LED_ptr,0);
     
     /* critical section */
-    OSSemPend(Semaphore, 0, NULL);
+    OSSemPend(Semaphore, 0, &err);
 
     printf("Hello from task1\n");
     snprintf(vga_msg, sizeof(vga_msg), "%02d   Hello from task1", line);
@@ -91,7 +92,7 @@ Ahora vamos a incluir interrupciones de pulsadores en nuestro sistema. Para ello
 
 **Pasos a seguir:**
 1. Active la habilitación de interrupciones de pulsadores eliminando los comentarios oportunos en el fichero `init.c`
-2. Incluya la librería `init.h` en la inclusión de librerías de `pract1_rtos.h`
+2. Incluya la librería `isr.h` en la inclusión de librerías de `pract1_rtos.h`
 3. Compile y ejecute sobre NIOSII.
 
 **Pregunta de reflexión:**
