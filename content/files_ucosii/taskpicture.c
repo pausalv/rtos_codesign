@@ -33,34 +33,38 @@ void TaskPicture(void* pdata)
 
 		if (fpzip == NULL) {
 			printf ("Error: could not open ZIP File\n");
-			filezip_number=0;
+			// filezip_number=0;
+			OSMutexPost(MutexMemory);
+			OSTaskDel(OS_PRIO_SELF);
 		} else {
 			printf ("Opened ZIP File %02d\n",filezip_number-1);
 			fclose (fpzip);
-			OSSemPend(SemaphoreMemory,0,&err);
-			alt_ucosii_check_return_code(err);
-#ifndef UNBLOQUE
-			PixelMem[filezip_number-1][0]=OSMemGet(ImageMemory, &err);
-#else
-			PixelMem[0][0]=OSMemGet(ImageMemory, &err); //CASO DE 1 BLOCK
-#endif
-			alt_ucosii_check_return_code(err);
+			int value = OSSemAccept(SemaphoreMemory);
+			if(value > 0){
 
-			// query sobre la particion de memoria
-					OSMemQuery(ImageMemory, &mem_data);
-					printf("Number of memory blocks = %ld, Free = %ld, Used = %ld \n",mem_data.OSNBlks,mem_data.OSNFree,mem_data.OSNUsed);
-					printf("Size (in bytes) of each memory block = %lu,\n",mem_data.OSBlkSize);
-					printf("Pointer to the beginning address of the memory partition = %lu,\n",mem_data.OSAddr);
-					printf("Pointer to the reserved memory block = %lu,\n",&PixelMem[filezip_number-1][0]);
-					printf("Pointer to the beginning of the free list of memory blocks = %lu,\n",mem_data.OSFreeList);
+				PixelMem[filezip_number-1][0]=OSMemGet(ImageMemory, &err);
+
+				alt_ucosii_check_return_code(err);
+
+				// query sobre la particion de memoria
+				OSMemQuery(ImageMemory, &mem_data);
+				printf("Number of memory blocks = %ld, Free = %ld, Used = %ld \n",mem_data.OSNBlks,mem_data.OSNFree,mem_data.OSNUsed);
+				printf("Size (in bytes) of each memory block = %lu,\n",mem_data.OSBlkSize);
+				printf("Pointer to the beginning address of the memory partition = %lu,\n",mem_data.OSAddr);
+				printf("Pointer to the reserved memory block = %lu,\n",&PixelMem[filezip_number-1][0]);
+				printf("Pointer to the beginning of the free list of memory blocks = %lu,\n",mem_data.OSFreeList);
 
 
 
-			Read_BMP_ZipFile(filezipname);
+				Read_BMP_ZipFile(filezipname);
 
-	//		OSMemPut(ImageMemory, PixelMem[filezip_number-1]);
-	//		OSSemPost(SemaphoreMemory);
-	//		alt_ucosii_check_return_code(error);
+				// OSMemPut(ImageMemory, PixelMem[filezip_number-1]);
+				// OSSemPost(SemaphoreMemory);
+				// alt_ucosii_check_return_code(error);
+			}else{
+				OSMutexPost(MutexMemory);
+				OSTaskDel(OS_PRIO_SELF);
+			}
 
 		}
 
@@ -70,7 +74,6 @@ void TaskPicture(void* pdata)
     OSTimeDlyHMSM(0, 0, 1, 0);
 	}
 }
-
 
 //Subrutina que lee un archivo BMP de la Flash
 short int Read_BMP_ZipFile(char *file_name)
