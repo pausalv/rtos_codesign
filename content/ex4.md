@@ -23,6 +23,12 @@ El fichero de cabecera `init.h` hará públicas las variables globales definidas
 
 Estudie el contenido de los ficheros `init.c` e `init.h`.
 
+Incluya `init.h` en `pract1_rtos.h` (junto a los ficheros de cabecera de las tareas) para que `main` y las tareas vean `Init_App()`, `Print_VGA()` y la variable `line`:
+
+```c
+#include "AppSW/inc/init.h"
+```
+
 Incluya la llamada a la función `Init_App()` en `main` antes de la creación de las tareas.
 
 Compile y verifique que la VGA funciona.

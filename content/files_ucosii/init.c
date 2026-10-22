@@ -55,7 +55,7 @@ void Init_App()
 void Print_VGA(char visualiza_string[35], int* line)
 {
     int first_line=3;
-    int last_line=60;
+    int last_line=59;  // VGA text rows are 0..59
 
     VGA_text (2, *line, visualiza_string, character_buffer);
     VGA_Clean_Lines(*line+1,*line+2,character_buffer);

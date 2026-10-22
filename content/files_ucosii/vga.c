@@ -28,8 +28,9 @@ void VGA_text(int x, int y, char * text_ptr, volatile char *character_buffer)
 	int i, len = 0;
 	char safe_buf[HORIZONTAL_CHARACTERS + 1];
 
-	/* comprobar rango x */
+	/* comprobar rango x e y */
 	if (x < 0 || x >= HORIZONTAL_CHARACTERS) return;
+	if (y < 0 || y >= VERTICAL_CHARACTERS) return;
 
 	/* calcular longitud de la cadena (limitada a HORIZONTAL_CHARACTERS) */
 	while (text_ptr[len] != '\0' && len < HORIZONTAL_CHARACTERS) ++len;
