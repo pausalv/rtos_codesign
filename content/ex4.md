@@ -11,13 +11,24 @@ Para ello use los ficheros `init.c` e `init.h` proporcionados en la práctica.
 > - [init.h](files_ucosii/init.h) - Archivo de cabecera con prototipos y variables globales
 > - [init.c](files_ucosii/init.c) - Archivo fuente con implementación de Init_App()
 
-El fichero de cabecera `init.h` hará públicas las variables globales definidas en `init.c` así como los prototipos de funciones cuyo cuerpo se encuentre en `init.c`.
+El fichero de cabecera `init.h` hará públicas las variables globales definidas en `init.c` así como los prototipos de funciones cuyo cuerpo se encuentre en `init.c`:
 
-<div align="center">
-	<img src="img/Imagen16.png" alt="Ejemplo de init.h" width="450"/>
-	<br>
-	<em>Figura 16. Ejemplo de init.h</em>
-</div>
+```c
+#ifndef INIT_H__
+#define INIT_H__
+
+/* include main project library */
+#include "..\..\pract1_rtos.h"
+
+/* declare de functions from init.c */
+void Init_App(void);
+void Print_VGA(char visualiza_string[15], int* line);
+
+/* extern public variables */
+extern int line;
+
+#endif // INIT_H__
+```
 
 <br>
 
@@ -35,13 +46,25 @@ Compile y verifique que la VGA funciona.
 
 ### Uso de Print_VGA() en las tareas
 
-Introducimos el uso de `Print_VGA()` en las tasks de forma que envíen el mensaje por la VGA. Realice esto con todas las task y compruebe su funcionamiento.
+Introducimos el uso de `Print_VGA()` en las tasks de forma que envíen el mensaje por la VGA. Realice esto con todas las task y compruebe su funcionamiento. Por ejemplo, en `task1`:
 
-<div align="center">
-	<img src="img/Imagen17.png" alt="Mensajes por VGA desde Tasks" width="450"/>
-	<br>
-	<em>Figura 17. Mensajes por VGA desde Tasks.</em>
-</div>
+```c
+/* Prints "Hello World" and sleeps for three seconds */
+void task1(void* pdata)
+{
+
+  while (1)
+  {
+    Toggle_Led(LED_ptr,0); // Toggle LED0
+
+    printf("Hello from task1\n");
+    Print_VGA("Hello from task1",&line);
+
+    Toggle_Led(LED_ptr,0); // Toggle LED0
+    OSTimeDlyHMSM(0, 0, 3, 0);
+  }
+}
+```
 
 <br>
 
@@ -59,11 +82,22 @@ La función `Print_VGA()` nos permite escribir strings en la VGA desde una task.
 
 Vamos a incluir el número de línea para que se visualice en la VGA. Para ello modifique las tasks de forma que puedan verse los números de línea como se muestra en el siguiente código ejemplo. De nuevo compile y ejecute sobre NIOSII.
 
-<div align="center">
-	<img src="img/Imagen18.png" alt="Inclusión de número de línea en código de task" width="600"/>
-	<br>
-	<em>Figura 18. Inclusión de número de línea en código de task.</em>
-</div>
+```c
+/* Prints "Hello World" and sleeps for three seconds */
+void task2(void* pdata)
+{
+  char vga_msg[60];
+  while (1)
+  {
+    Toggle_Led(LED_ptr,1);
+    printf("Hello from task2\n");
+    snprintf(vga_msg, sizeof(vga_msg), "%02d   Hello from task2", line);
+    Print_VGA(vga_msg, &line);
+    Toggle_Led(LED_ptr,1);
+    OSTimeDlyHMSM(0, 0, 3, 0);
+  }
+}
+```
 
 <br>
 
