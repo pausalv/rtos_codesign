@@ -31,9 +31,9 @@ Además, cuando el SW1 esté a 1 se recupera la tarea cuyo código se muestra en
  */
 void TaskSW(void* pdata)
 {
-	INT8U action, action_old;
+	INT8U action=0, action_old=0;
 	INT8U item;
-	INT8U err;
+	INT8U err, err_task;
 	for(;;){
 		action_old=action;
 		action=*SW_switch_ptr&0x0003;
@@ -45,7 +45,7 @@ void TaskSW(void* pdata)
 			printf("Item is %d\n",item);
 			OSSemPost(Semaphore);
 		}
-		if ((INT8U)item!=TASK_SWITCH_PRIORITY){
+		if ((INT8U)item!=TASK7_PRIORITY){
 			OSSemPend(Semaphore,0,&err);
 			alt_ucosii_check_return_code(err);
 			printf("Hello from TaskSW\n");
@@ -55,20 +55,19 @@ void TaskSW(void* pdata)
 			{
 				case 2:
 				{
-					err=OSTaskResume((INT8U)item);
-					if (err!=OS_ERR_NONE){
-						OSSemPend(Semaphore);
+					err_task=OSTaskResume((INT8U)item);
+					if (err_task==OS_ERR_NONE){
+						OSSemPend(Semaphore,0,&err);
 						alt_ucosii_check_return_code(err);
 						printf("Task%0d resumed\n",item);
 						OSSemPost(Semaphore);
-					
 					}
 					break;
 				}
 				case 1:
 				{
-					err=OSTaskSuspend((INT8U)item);
-					if (err!=OS_ERR_NONE){
+					err_task=OSTaskSuspend((INT8U)item);
+					if (err_task==OS_ERR_NONE){
 						OSSemPend(Semaphore,0,&err);
 						alt_ucosii_check_return_code(err);
 						printf("Task%0d suspended\n",item);
@@ -84,7 +83,7 @@ void TaskSW(void* pdata)
 
 		// when SW8 is ON activates Flags
 		/*
-		if(*SW_switch_ptr&0x80){
+		if(*SW_switch_ptr&0x100){
 			OSFlagPost(EventFlag,0x04,OS_FLAG_SET, &err);
 			alt_ucosii_check_return_code(err);
 		} else {
